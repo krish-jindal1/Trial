@@ -1,0 +1,495 @@
+Implement following concepts using C++/Java.
+
+1. Bit Stuffing
+
+Code:
+
+#include<stdio.h>
+
+#include<string.h>
+
+int main()
+
+{
+
+    int a[20],b[30],i,j,k,count,n;
+
+    printf("Enter frame size (Example: 8):");
+
+    scanf("%d",&n);
+
+    printf("Enter the frame in the form of 0 and 1 :");
+
+    for(i=0; i<n; i++)
+
+        scanf("%d",&a[i]);
+
+    i=0;
+
+    count=1;
+
+    j=0;
+
+    while(i<n)
+
+    {
+
+        if(a[i]==1)
+
+        {
+
+            b[j]=a[i];
+
+            for(k=i+1; a[k]==1 && k<n && count<5; k++)
+
+            {
+
+                j++;
+
+                b[j]=a[k];
+
+                count++;
+
+                if(count==5)
+
+                {
+
+                    j++;
+
+                    b[j]=0;
+
+                }
+
+                i=k;
+
+            }
+
+        }
+
+        else
+
+        {
+
+            b[j]=a[i];
+
+        }
+
+        i++;
+
+        j++;
+
+    }
+
+    printf("After Bit Stuffing :");
+
+    for(i=0; i<j; i++)
+
+        printf("%d",b[i]);
+
+    return 0;
+
+}
+
+
+Output:
+
+Text
+Description automatically generated
+
+
+
+2. CRC Error Correction:
+
+Code:
+
+// A C++ program for cyclic redundency check
+
+#include<iostream>
+
+using namespace std; 
+
+class CRC 
+
+{ 
+
+public: 
+
+int nf, ng, frame[20], gen[10], temp[20], b; 
+
+char a;
+
+int* divide(int n, int g, int temp[10], int gen[10]) { 
+
+for(int i=0; i<n; i++) 
+
+{ 
+
+if(gen[0]==temp[i]) 
+
+{ 
+
+for(int j=0, k=i; j<g+1; j++, k++) 
+
+{ 
+
+if(temp[k]^gen[j]==1) 
+
+temp[k]=1; 
+
+else 
+
+temp[k]=0; 
+
+} 
+
+} 
+
+} 
+
+return temp; 
+
+} 
+
+void input() 
+
+{ 
+
+cout<<"Enter length of your frame:"; 
+
+cin>>nf; 
+
+cout<<"Enter your frame:"; 
+
+for(int i=0; i<nf; i++)
+
+{ 
+
+cin>>frame[i]; 
+
+temp[i]=frame[i]; 
+
+} 
+
+cout<<"Enter length of your generator:"; cin>>ng; 
+
+cout<<"Enter your generator:"; 
+
+for(int i=0; i<ng; i++) 
+
+{ 
+
+cin>>gen[i]; 
+
+} 
+
+ng--; 
+
+for(int i=0; i<ng; i++) 
+
+{ 
+
+temp[nf+i]=0; 
+
+} 
+
+} 
+
+void sender_side() 
+
+{ 
+
+int* sender; 
+
+sender = divide(nf,ng,temp,gen);
+
+cout<<endl<<"-----Senders Side-----\n"<<"CRC:"; 
+
+for(int i=0; i<ng; i++) 
+
+{ 
+
+frame[nf+i]=sender[nf+i]; 
+
+cout<<sender[nf+i]<<' '; 
+
+} 
+
+cout<<endl<<"Transmitted frame:"; 
+
+for(int i=0; i<nf+ng; i++) 
+
+cout<<frame[i]<<' '; 
+
+cout<<endl; 
+
+} 
+
+int receiver_side() 
+
+{ 
+
+int* receiver; 
+
+cout<<"\n-----Receivers Side-----\n"<<"Received message:"; 
+
+for(int i=0; i<nf+ng; i++) 
+
+cout<<frame[i]<<' '; 
+
+cout<<endl; 
+
+cout<<"Enter which bit you want to change(from 0-"<<nf+ng<<")-";
+
+cin>>b; 
+
+if(frame[b]==1) 
+
+frame[b]=0; 
+
+else 
+
+frame[b]=1; 
+
+receiver = divide(nf,ng,frame,gen); 
+
+cout<<"Error:"; 
+
+for(int i=0; i<nf+ng; i++) 
+
+{ 
+
+if(receiver[i]!=0) 
+
+{ 
+
+cout<<"Error Detected!!"<<endl; 
+
+return 0; 
+
+} 
+
+} 
+
+cout<<"No error detected!"<<endl; 
+
+} 
+
+}; 
+
+int main() 
+
+{ 
+
+CRC o;
+
+o.input(); 
+
+o.sender_side(); 
+
+o.receiver_side(); 
+
+return 0; 
+
+} 
+
+
+Output:
+
+Text
+Description automatically generated
+
+Text
+Description automatically generated
+
+
+
+3. Selective Repeat ARQ Protocol Implementation:
+
+Code:
+
+// A C++ program to implement selective repeat ARQ
+
+#include<iostream>
+
+using namespace std;
+
+ 
+
+int main()
+
+{
+
+    //variables are: w is for window size
+
+    //f is the number of frames to send
+
+    int w,i,f,frames[50];
+
+ 
+
+    cout<<"Enter window size: ";
+
+    cin>>w;
+
+ 
+
+    cout<<"Enter number of frames to transmit: ";
+
+    cin>>f;
+
+ 
+
+    cout<<"\nEnter data of "<<f<<" frames: ";
+
+ 
+
+    for(i=1;i<=f;i++)
+
+        cin>>frames[i];
+
+ 
+
+    cout<<"\nWith sliding window protocol the frames will be sent in the following manner (assuming no corruption of frames)\n\n";
+
+    cout<<"After sending "<<w<<" frames at each stage sender waits for acknowledgement sent by the receiver\n\n";
+
+ 
+
+    for(i=1;i<=f;i++)
+
+    {
+
+        if(i%w==0)
+
+        {
+
+            cout<<frames[i]<<"\n";
+
+            cout<<"Acknowledgement of above frames sent is received by sender\n\n";
+
+        }
+
+        else
+
+            cout<<frames[i]<<" ";
+
+    }
+
+ 
+
+    if(f%w!=0)
+
+        cout<<"\nAcknowledgement of above frames sent is received by sender\n";
+
+ 
+
+    return 0;
+
+}
+
+
+Output:
+
+
+
+
+
+
+
+
+
+4. Go Back N Protocol Implementation:
+
+Code:
+
+#include<iostream>
+
+#include<ctime>
+
+#include<cstdlib>
+
+using namespace std;
+
+int main()
+
+{
+
+ int nf,N;//nf is number of frames and N is window size
+
+ int no_tr=0;
+
+ srand(time(NULL));
+
+ cout<<"Enter the number of frames : ";
+
+ cin>>nf;// no. of frames to transfer
+
+ cout<<"Enter the Window Size : ";
+
+ cin>>N;//window size
+
+ int i=1;
+
+ while(i<=nf)
+
+ {
+
+     int x=0;
+
+     for(int j=i;j<i+N && j<=nf;j++)
+
+     {
+
+         cout<<"Sent Frame "<<j<<endl;
+
+         no_tr++;
+
+     }
+
+     for(int j=i;j<i+N && j<=nf;j++)
+
+     {
+
+         int flag = rand()%2;
+
+         if(!flag)
+
+             {
+
+                 cout<<"Acknowledgment for Frame "<<j<<endl;
+
+                 x++;
+
+             }
+
+         else
+
+             {   cout<<"Frame "<<j<<" Not Received"<<endl;
+
+                 cout<<"Retransmitting Window"<<endl;
+
+                 break;
+
+             }
+
+     }
+
+     cout<<endl;
+
+     i+=x;
+
+ }
+
+ cout<<"Total number of transmissions : "<<no_tr<<endl;
+
+ return 0;
+
+}
+
+
+Output:
+
+
+
+
+
